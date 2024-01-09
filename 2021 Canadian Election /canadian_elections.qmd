@@ -1,0 +1,163 @@
+---
+title: "Explore the 2021 Canadian Federal Election"
+author: "Aviral Bhardwaj"
+format: html
+---
+``` {r}
+#### Preamble ####
+# Purpose: Read in data from the 2021 Canadian Federal Election and make
+# a graph of the number of ridings won by each party.
+# Author: Aviral Bhardwaj
+# Email: aviral.bhardwaj@mail.utoronto.ca
+# Date: 8 January 2024
+```
+
+```{r}
+#### Workspace setup ####
+# install.packages("tidyverse")
+# install.packages("janitor")
+library(tidyverse)
+library(janitor)
+```
+## Plan
+![Representation of Graph and Dataset](plan.jpeg)
+
+
+## Simulate
+
+``` {r}
+# Simulating data for the 2021 Canadian Federal Election
+simulated_data <-
+  tibble(
+    # Use 1 through to 338 to represent each division
+    "Riding" = 1:338,
+    # Randomly pick an option, with replacement, 338 times
+    "Party" = sample(
+      x = c("Liberal", "Conservative", "Bloc Québécois", "New Democratic", "Green", "Other"),
+      size = 338,
+      replace = TRUE
+    )
+  )
+
+simulated_data
+```
+
+## Acquire
+
+```{r}
+# Download and Read the data 
+#### Read in the data ####
+raw_elections_data <-
+  read_csv(
+    file = 
+      "table_tableau11.csv",
+    show_col_types = FALSE,
+  )
+
+```
+
+```{r}
+#### Basic cleaning ####
+raw_elections_data <-
+  read_csv(
+    file = "canada_voting.csv",
+    show_col_types = FALSE
+  )
+# Make the names easier to type by adjusting the name of the variable
+cleaned_elections_data <-
+  clean_names(raw_elections_data)
+
+# First six rows of cleaned data
+head(cleaned_elections_data)
+```
+
+```{r}
+# Renaming the variables of interest to English
+cleaned_elections_data <- cleaned_elections_data |>
+  select(
+    electoral_district_name_nom_de_circonscription,
+    elected_candidate_candidat_elu
+  )
+  
+cleaned_elections_data <-
+  cleaned_elections_data |>
+  rename(
+    riding = electoral_district_name_nom_de_circonscription,
+    elected_candidate = elected_candidate_candidat_elu
+  )
+
+head(cleaned_elections_data)
+```
+
+```{r}
+# Seperate the Party Name and Clean the data from elected candidates
+cleaned_elections_data <- cleaned_elections_data |>
+  separate(
+    col = elected_candidate,
+    into = c("Other", "party"),
+    sep = "/"
+  ) |>
+  select(-Other)
+
+head(cleaned_elections_data)
+```
+
+```{r}
+# Renaming Party Names from French to English
+cleaned_elections_data <- cleaned_elections_data |>
+  mutate(
+    party = recode(
+      party,
+      "Libéral" = "Liberal",
+      "Conservateur" = "Conservative",
+      "Bloc Québécois" = "Bloc Québécois",
+      "NPD-Nouveau Parti démocratique" = "New Democratic",
+      "Parti Vert" = "Green",
+      "Autre" = "Other"
+    )
+  )
+
+write_csv (
+  x = cleaned_elections_data,
+  file = "cleaned_elections_data.csv"
+)
+
+head(cleaned_elections_data)
+```
+
+## Explore
+```{r}
+# Reading the data from CSV file
+cleaned_elections_data <-
+  read_csv(
+    file = "cleaned_elections_data.csv",
+    show_col_types = FALSE
+  )
+```
+
+```{r}
+# Creating the table from the planning stage
+cleaned_elections_data |>
+  count(party)
+```
+
+```{r}
+# Building the graph of interest using ggplot2, from the planning stage
+cleaned_elections_data |>
+  ggplot(aes(x = party)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(x = "Party", y = "Number of seats")
+```
+## Share
+
+
+> Canada is a parliamentary democracy with 338 seats in the House of Commons, which is the lower house and that from which government is formed. There are two major parties—“Liberal” and “Conservative”—three minor parties—“Bloc Québécois”, “New Democratic”, and “Green”—and many smaller parties and independents. We are interested in the number of seats that each party won in the 2021 Federal Election.
+>
+> We downloaded the results, on riding specific basis, from the Election Canada data. We cleaned and tidied the dataset using the statistical programming language R [@citeR] including the `tidyverse` [@tidyverse] and `janitor` [@janitor]. We then created a graph of the number of seats that each political party won.
+>
+> We found out that Liberal won 160 seats Conservative won 119 seats Bloc Québécois won 32 seats, New Democratic won 25 seats and Green won 2 seats making a total of 338 seats.
+>
+> The distribution is skewed towards the major two parties Conservative and Liberal as they often form the majority goverment because of their strong presence pronvicial and country wise. It is interesting to see that Liberals and Conservative riding distribution is quite close, and will be an intersting next elections for federal government. Followed by Bloc Québécois  who has strong presenece in French Speaking Province and New Democratic which are strongly increasing their presenece. It should be noted that dataset consists of everyone who voted, it is worth noting that in Canada there are pronvinces where voting is difficult to conduct and not all people vote for the federal elections.
+
+
