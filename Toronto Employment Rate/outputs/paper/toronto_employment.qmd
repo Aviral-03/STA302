@@ -1,0 +1,117 @@
+---
+title: "Total Employment in Toronto"
+author: "Aviral Bhardwaj"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+abstract: "This paper investigates the employment landscape in Toronto municipalities for the year 2020, focusing on the employed population. Utilizing data normalization techniques, we explore the relative distribution of employment across various regions. Our findings reveal insights into the employment dynamics, highlighting key trends and disparities among different municipalities. By examining the normalized data, this study provides a nuanced understanding of the employment structure within Toronto, contributing valuable perspectives for policymakers and urban planners aiming to address regional employment challenges."
+format: pdf
+bibliography: references.bib
+---
+
+``` {r}
+#### Preamble ####
+# Purpose: Read in data from the 2020 Toronto Municipalities
+# employment rates and make a graph.
+# Author: Aviral Bhardwaj
+# Email: aviral.bhardwaj@mail.utoronto.ca
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#### Workspace setup ####
+library(tidyverse)
+library(janitor)
+```
+
+
+## Acquiring the Data
+
+```{r}
+# Download and Read the data 
+#### Read in the data ####
+raw_emp_data <-
+  read_csv(
+    file = 
+      "Emp2020.csv",
+    show_col_types = FALSE,
+  )
+
+```
+
+```{r}
+
+# Make the names easier to type by adjusting the name of the variable
+cleaned_emp_data <-
+  clean_names(raw_emp_data)
+
+# First six rows of cleaned data
+head(cleaned_emp_data)
+```
+
+```{r}
+# Renaming the variables of interest to English
+cleaned_emp_data <- cleaned_emp_data |>
+  select(
+    x1,
+    x2020_total_employment
+  )
+  
+cleaned_emp_data <-
+  cleaned_emp_data |>
+  rename(
+    municipalities = x1,
+    total_employment = x2020_total_employment
+  )
+
+head(cleaned_emp_data)
+```
+## Explore
+
+```{r}
+# Assuming your data is stored in a dataframe named 'table4_data'
+
+# Extract the 'total_employment' and 'municipalities' columns
+cleaned_emp_data <- cleaned_emp_data |>
+  mutate(normalized_data = (total_employment / total_employment[which(municipalities == "City Total")]) * 100) |>
+  filter(municipalities != "City Total")
+
+write_csv(
+  x = cleaned_emp_data,
+  file = "cleaned_emp_data.csv"
+)
+
+head(cleaned_emp_data)
+```
+
+```{r}
+# Building the graph of interest using ggplot2, from the planning stage
+#| eval: true
+#| warning: false
+#| label: fig-employment
+cleaned_emp_data |>
+  ggplot(aes(x = municipalities, y = normalized_data)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Municipalities", y = "Total % of people employed")
+
+```
+
+
+## Share
+
+The dataset provides insights into the employment landscape across different municipalities in Toronto, including total employment numbers for each municiplaities The analysis highlights key findings:
+
+- Downtown and the Centres Dominates Employment:
+Downtown and the Centres stand out with the highest total employment of 614,940, constituting approximately 42.41% of the total employment in the dataset.
+The normalized data further emphasizes the significant contribution of Downtown and the Centres to the overall employment scenario.
+
+- Varied Employment Levels in Different Municipalities:
+Municipalities like North York Centre, Yonge-Eglinton, Scarborough Centre, and Etobicoke Centre exhibit lower total employment but still play crucial roles in the city's employment landscape.
+
+In conclusion, the analysis sheds light on the varying employment levels and distributions across Toronto's municipalities. The concentration of employment in Downtown and the Centres suggests a centralization of economic activity, however much focus are needed to create more jobs in other municipalities.
+
+# References
+[@citeR]
+[@thereferencecanbewhatever]
+[@toronto_employment_survey]
