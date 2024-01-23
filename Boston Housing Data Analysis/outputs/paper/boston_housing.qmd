@@ -28,3 +28,4 @@ In summary, the Boston Housing Dataset, designed to explore property price deter
 Additionally, the data should be utilized to comprehend the historical context of the housing market and to identify historical biases, rather than being employed for making predictions about the contemporary housing market.
 
 # References
+[@Rmanual]
