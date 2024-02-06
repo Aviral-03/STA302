@@ -1,15 +1,15 @@
-# Total Employment in Municipalities of Toronto
+# Declining Response Rates
 
 ## Author
 Aviral Bhardwaj
 
 ## Overview
-This repository contains an an analysis document that explores the bias and ethical issues of Boston Housing Data.
-
+This repository contains an an analysis document that explores the Declining Response Rates Across Different Modes of Data Collection.
+.
 To use this folder, click the green "Code" button", then "Download ZIP". Move the downloaded folder to where you want to work on your own computer, and then modify it to suit.
 
 ## Usage
-To generate the PDF document, open the R Markdown file (`boston_housing.qmd`) in RStudio and click the "Render" button.
+To generate the PDF document, open the R Markdown file (`Nonreponse_analysis.qmd`) in RStudio and click the "Render" button.
 
 ## Dependencies
 - R
